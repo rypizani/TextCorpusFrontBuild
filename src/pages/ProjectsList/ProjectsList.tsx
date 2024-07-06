@@ -63,7 +63,6 @@ const ProjectList: React.FC = () => {
   }>({});
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   useEffect(() => {
     const fetchDocumentos = async () => {
       try {
@@ -116,8 +115,9 @@ const ProjectList: React.FC = () => {
   };
 
   const handleEditDocument = (documento: Documentos) => {
+    const isEditing = documento.edit === "false" ? false : true;
     setIsCreating(true);
-    setIsEditing(true);
+    setIsEditing(isEditing);
     setCurrentDocument(documento);
     setNewDocumentData({
       userId: UserStorage.getUserId(),
@@ -319,42 +319,34 @@ const ProjectList: React.FC = () => {
           <Text>Carregando...</Text>
         ) : (
           <Stack spacing={4} width="100%" maxWidth="600px">
-            {paginatedDocumentos.map((documento) => (
-              <SlideFade key={documento.id_documento} in offsetY="20px">
-                <Box
-                  bg="white"
-                  borderRadius="md"
-                  boxShadow="md"
-                  padding={5}
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  _hover={{ bg: "gray.50" }}
-                  cursor="pointer"
-                  position="relative"
-                >
-                  <Text marginRight={2} fontSize="md" isTruncated>
-                    {documento.titulo && documento.titulo.length > 40
-                      ? `${documento.titulo.slice(0, 40)}...`
-                      : documento.titulo}
-                  </Text>
-                  <Flex position="absolute" top={4} right={2} >
-                    <Button
-                      size="sm"
-                      onClick={() => setSelectedDocumentId(documento.id_documento || null)}
-                      mr={1}
-                    >
-                      <DragHandleIcon />
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => handleEditDocument(documento)}
-                    >
-                      <EditIcon />
-                    </Button>
-                  </Flex>
-                </Box>
-              </SlideFade>
-            ))}
+      {paginatedDocumentos.map((documento) => (
+            <Flex
+              key={documento.id_documento}
+              justify="space-between"
+              align="center"
+              padding={3}
+              bg="gray.50"
+              borderRadius="md"
+              borderWidth="1px"
+              borderColor="gray.200"
+            >
+              <Text>{documento.titulo}</Text>
+              <Flex>
+                <IconButton
+                  icon={<EditIcon />}
+                  aria-label="Editar Documento"
+                  onClick={() => handleEditDocument(documento)}
+                  isDisabled={documento.edit === "false"} // Desabilita o botão se documento.edit for "false"
+                />
+                <IconButton
+                  ml={2}
+                  icon={<DragHandleIcon />}
+                  aria-label="Selecionar Documento"
+                  onClick={() => setSelectedDocumentId(documento.id_documento || null)}
+                />
+              </Flex>
+            </Flex>
+          ))}
           </Stack>
         )}
         <Flex justify="space-between" alignItems="center" marginTop={4}>

@@ -7,6 +7,7 @@ export class Documentos {
     discente?: string;
     orientador?: string;
     resumo?: string;
+    edit?: string;
     documentos?: Documentos[]; // Adiciona a propriedade documentos
 
     public constructor(data: any = {}) {
@@ -18,6 +19,7 @@ export class Documentos {
         this.discente = data?.discente || '';
         this.orientador = data?.orientador || '';
         this.resumo = data?.resumo || '';
+        this.edit = data?.edit || '';
         // Inicializa a propriedade documentos se estiver presente
         this.documentos = data?.documentos ? data.documentos.map((doc: any) => new Documentos(doc)) : [];
     }

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { 
-    Box, 
-    Modal, 
-    ModalOverlay, 
-    ModalContent, 
-    ModalHeader, 
-    ModalFooter, 
-    ModalBody, 
-    ModalCloseButton, 
-    Table, 
-    Thead, 
-    Tbody, 
-    Tr, 
-    Th, 
-    Td, 
+import {
+    Box,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
     Button,
+    Spinner,
 } from '@chakra-ui/react';
 
 interface DocumentData {
@@ -31,9 +31,11 @@ interface CompareDocumentsModalProps {
 
 const CompareDocumentsModal: React.FC<CompareDocumentsModalProps> = ({ isOpen, onClose, compareData }) => {
     const [data, setData] = useState<DocumentData | null>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
                 const response = await fetch('http://185.137.92.41:3001/documentos/comparedocuments', {
                     method: 'POST',
@@ -51,13 +53,14 @@ const CompareDocumentsModal: React.FC<CompareDocumentsModalProps> = ({ isOpen, o
                 setData(data);
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         if (isOpen) {
             fetchData();
         } else {
-            // Limpar os dados quando o modal é fechado
             setData(null);
         }
     }, [isOpen, compareData]);
@@ -80,11 +83,11 @@ const CompareDocumentsModal: React.FC<CompareDocumentsModalProps> = ({ isOpen, o
                         <Tr key={comparaId}>
                             <Td>{comparaId}</Td>
                             {allDocIds.map(docId => (
-     <Td key={docId}>
-     {docData[docId] !== undefined 
-         ? docData[docId].toFixed(2) // Ajusta para duas casas decimais
-         : '0'}
- </Td>                            ))}
+                                <Td key={docId}>
+                                    {docData[docId] !== undefined
+                                        ? docData[docId].toFixed(2) 
+                                        : '0'}
+                                </Td>))}
                         </Tr>
                     ))}
                 </Tbody>
@@ -93,18 +96,21 @@ const CompareDocumentsModal: React.FC<CompareDocumentsModalProps> = ({ isOpen, o
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={() => { onClose(); setData(null); }} size="full">
+        <Modal isOpen={isOpen} onClose={onClose} size="full">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Visualização de Tabela</ModalHeader>
-                <ModalCloseButton />
                 <ModalBody>
                     <Box overflowX="auto">
-                        {data ? generateTable(data) : 'Loading...'}
+                        {loading ? (
+                            <Spinner size="xl" />
+                        ) : (
+                            data ? generateTable(data) : 'Loading...'
+                        )}
                     </Box>
                 </ModalBody>
                 <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onClose}>
+                    <Button colorScheme="blue" mr={3} onClick={onClose} isDisabled={loading}>
                         Close
                     </Button>
                 </ModalFooter>
