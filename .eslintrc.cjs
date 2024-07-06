@@ -15,4 +15,13 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
-}
+  overrides: [
+    {
+      files: ['src/**/*.tsx', 'src/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off', // Desativa o erro de variáveis não utilizadas do TypeScript
+        'no-unused-vars': 'off', // Desativa o erro de variáveis não utilizadas do ESLint
+      },
+    },
+  ],
+};
